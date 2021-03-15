@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 	import Counter from '$lib/Counter.svelte';
 </script>
 
@@ -7,13 +7,16 @@
 
 	<Counter />
 
-	<p>Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte apps.</p>
+	<p>
+		Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
+		apps.
+	</p>
 </main>
 
 <style>
 	:root {
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-			'Open Sans', 'Helvetica Neue', sans-serif;
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+			Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	}
 
 	main {
