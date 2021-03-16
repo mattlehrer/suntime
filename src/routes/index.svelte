@@ -11,6 +11,8 @@
 	let city: string;
 	let sunTimes: SunTimes;
 	let times: HTMLElement;
+	let innerHeight: number;
+	let innerWidth: number;
 
 	onMount(async () => {
 		try {
@@ -46,175 +48,58 @@
 			times = document.getElementById('times');
 
 			const timeTuples = [
-				{ name: 'Astronomical Dawn Start', time: astronomicalDawn.start },
-				{ name: 'Nautical Dawn Start', time: nauticalDawn.start },
-				{ name: 'Civil Dawn Start', time: civilDawn.start },
+				{ text: 'Astronomical Dawn Start', time: astronomicalDawn.start },
+				{ text: 'Nautical Dawn Start', time: nauticalDawn.start },
+				{ text: 'Civil Dawn Start', time: civilDawn.start },
 				{
-					name: 'Sunrise',
+					text: 'Sunrise',
 					time: new Date(
 						sunrise.start.getTime() +
 							(sunrise.end.getTime() - sunrise.start.getTime()) / 2,
 					),
 				},
-				{ name: 'Solar Noon', time: transit },
+				{ text: 'Solar Noon', time: transit },
 				{
-					name: 'Sunset',
+					text: 'Sunset',
 					time: new Date(
 						sunset.start.getTime() +
 							(sunset.end.getTime() - sunset.start.getTime()) / 2,
 					),
 				},
-				{ name: 'Civil Dusk End', time: civilDusk.end },
-				{ name: 'Nautical Dusk End', time: nauticalDusk.end },
-				{ name: 'Astronomical Dusk End', time: astronomicalDusk.end },
+				{ text: 'Civil Dusk End', time: civilDusk.end },
+				{ text: 'Nautical Dusk End', time: nauticalDusk.end },
+				{ text: 'Astronomical Dusk End', time: astronomicalDusk.end },
 			];
 
-			// astronomicalDawn
-			const astronomicalDawnDiv = document.createElement('div');
-			astronomicalDawnDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const astronomicalDawnText = document.createElement('p');
-			astronomicalDawnText.innerText = 'Astronomical Dawn Start';
-			const astronomicalDawnTime = document.createElement('p');
-			astronomicalDawnTime.innerText = astronomicalDawn.start.toLocaleTimeString(
-				[],
-				{
+			timeTuples.forEach(({ text, time }) => {
+				const div = document.createElement('div');
+				div.classList.add('flex', 'flex-row', 'justify-between', 'relative');
+				const textP = document.createElement('p');
+				textP.innerText = text;
+				const timeP = document.createElement('p');
+				timeP.innerText = time.toLocaleTimeString([], {
 					hour: '2-digit',
 					minute: '2-digit',
 					second: '2-digit',
-				},
-			);
-			astronomicalDawnDiv.appendChild(astronomicalDawnText);
-			astronomicalDawnDiv.appendChild(astronomicalDawnTime);
-			times.appendChild(astronomicalDawnDiv);
+				});
 
-			// nauticalDawn
-			const nauticalDawnDiv = document.createElement('div');
-			nauticalDawnDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const nauticalDawnText = document.createElement('p');
-			nauticalDawnText.innerText = 'Nautical Dawn Start';
-			const nauticalDawnTime = document.createElement('p');
-			nauticalDawnTime.innerText = nauticalDawn.start.toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
+				// calculate time since midnight for now
+				// TODO: switch order to center current time
+				const sinceMidnight = getMsSinceMidnight(time);
+				const dayMs = 24 * 60 * 60 * 1000 * 1.03; // +3% so times at bottom edge are on screen
+				const percentOfDay = sinceMidnight / dayMs;
+
+				console.log({ sinceMidnight, dayMs, percentOfDay });
+
+				div.setAttribute(
+					'style',
+					`top: ${((percentOfDay * innerHeight) / innerWidth) * 100}%`,
+				);
+
+				div.appendChild(textP);
+				div.appendChild(timeP);
+				times.appendChild(div);
 			});
-			nauticalDawnDiv.appendChild(nauticalDawnText);
-			nauticalDawnDiv.appendChild(nauticalDawnTime);
-			times.appendChild(nauticalDawnDiv);
-
-			// civilDawn
-			const civilDawnDiv = document.createElement('div');
-			civilDawnDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const civilDawnText = document.createElement('p');
-			civilDawnText.innerText = 'Civil Dawn Start';
-			const civilDawnTime = document.createElement('p');
-			civilDawnTime.innerText = civilDawn.start.toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-			});
-			civilDawnDiv.appendChild(civilDawnText);
-			civilDawnDiv.appendChild(civilDawnTime);
-			times.appendChild(civilDawnDiv);
-
-			// sunrise
-			const sunriseDiv = document.createElement('div');
-			sunriseDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const sunriseText = document.createElement('p');
-			sunriseText.innerText = 'Sunrise';
-			const sunriseTime = document.createElement('p');
-			sunriseTime.innerText = new Date(
-				sunrise.start.getTime() +
-					(sunrise.end.getTime() - sunrise.start.getTime()) / 2,
-			).toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-			});
-			sunriseDiv.appendChild(sunriseText);
-			sunriseDiv.appendChild(sunriseTime);
-			times.appendChild(sunriseDiv);
-
-			// transit
-			const transitDiv = document.createElement('div');
-			transitDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const transitText = document.createElement('p');
-			transitText.innerText = 'Solar Noon';
-			const transitTime = document.createElement('p');
-			transitTime.innerText = transit.toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-			});
-			transitDiv.appendChild(transitText);
-			transitDiv.appendChild(transitTime);
-			times.appendChild(transitDiv);
-
-			// sunset
-			const sunsetDiv = document.createElement('div');
-			sunsetDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const sunsetText = document.createElement('p');
-			sunsetText.innerText = 'Sunset';
-			const sunsetTime = document.createElement('p');
-			sunsetTime.innerText = new Date(
-				sunset.start.getTime() +
-					(sunset.end.getTime() - sunset.start.getTime()) / 2,
-			).toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-			});
-			sunsetDiv.appendChild(sunsetText);
-			sunsetDiv.appendChild(sunsetTime);
-			times.appendChild(sunsetDiv);
-
-			// civilDusk
-			const civilDuskDiv = document.createElement('div');
-			civilDuskDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const civilDuskText = document.createElement('p');
-			civilDuskText.innerText = 'Civil Dusk End';
-			const civilDuskTime = document.createElement('p');
-			civilDuskTime.innerText = civilDusk.end.toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-			});
-			civilDuskDiv.appendChild(civilDuskText);
-			civilDuskDiv.appendChild(civilDuskTime);
-			times.appendChild(civilDuskDiv);
-
-			// nauticalDusk
-			const nauticalDuskDiv = document.createElement('div');
-			nauticalDuskDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const nauticalDuskText = document.createElement('p');
-			nauticalDuskText.innerText = 'Nautical Dusk End';
-			const nauticalDuskTime = document.createElement('p');
-			nauticalDuskTime.innerText = nauticalDusk.end.toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-			});
-			nauticalDuskDiv.appendChild(nauticalDuskText);
-			nauticalDuskDiv.appendChild(nauticalDuskTime);
-			times.appendChild(nauticalDuskDiv);
-
-			// astronomicalDusk
-			const astronomicalDuskDiv = document.createElement('div');
-			astronomicalDuskDiv.classList.add('flex', 'flex-row', 'justify-between');
-			const astronomicalDuskText = document.createElement('p');
-			astronomicalDuskText.innerText = 'Astronomical Dusk End';
-			const astronomicalDuskTime = document.createElement('p');
-			astronomicalDuskTime.innerText = astronomicalDusk.end.toLocaleTimeString(
-				[],
-				{
-					hour: '2-digit',
-					minute: '2-digit',
-					second: '2-digit',
-				},
-			);
-			astronomicalDuskDiv.appendChild(astronomicalDuskText);
-			astronomicalDuskDiv.appendChild(astronomicalDuskTime);
-			times.appendChild(astronomicalDuskDiv);
 		} catch (error) {
 			console.error(error);
 		}
@@ -231,11 +116,19 @@
 			clearInterval(interval);
 		};
 	});
+
+	function getMsSinceMidnight(d: Date) {
+		const midnight = new Date(d);
+		midnight.setHours(0, 0, 0, 0);
+		return d.getTime() - midnight.getTime();
+	}
 </script>
 
 <svelte:head>
 	<title>Sun Time</title>
 </svelte:head>
+
+<svelte:window bind:innerHeight bind:innerWidth />
 
 <div class="relative h-full">
 	<div id="bg" class="absolute inset-0 h-full" />
