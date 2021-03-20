@@ -28,6 +28,7 @@
 	},
 	"dependencies": {
 		"@modern-dev/daylight": "^0.1.0",
+		"date-fns": "^2.19.0",
 		"wretch": "^1.7.4"
 	}
 }

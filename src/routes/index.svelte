@@ -1,6 +1,7 @@
 <script>
 	import type { SunTimes } from '@modern-dev/daylight';
 	import { sun } from '@modern-dev/daylight';
+	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
 
 	// https://github.com/modern-dev/daylight
@@ -13,6 +14,10 @@
 	let times: HTMLElement;
 	let innerHeight: number;
 	let innerWidth: number;
+	let timeTuples: {
+		text: string;
+		time: Date;
+	}[];
 
 	onMount(async () => {
 		try {
@@ -45,9 +50,9 @@
 			} = sunTimes;
 			console.log(sunTimes);
 
-			times = document.getElementById('times');
+			// times = document.getElementById('times');
 
-			const timeTuples = [
+			timeTuples = [
 				{ text: 'Astronomical Dawn Start', time: astronomicalDawn.start },
 				{ text: 'Nautical Dawn Start', time: nauticalDawn.start },
 				{ text: 'Civil Dawn Start', time: civilDawn.start },
@@ -72,32 +77,70 @@
 			];
 
 			timeTuples.forEach(({ text, time }) => {
-				const div = document.createElement('div');
-				div.classList.add('flex', 'flex-row', 'justify-between', 'relative');
-				const textP = document.createElement('p');
-				textP.innerText = text;
-				const timeP = document.createElement('p');
-				timeP.innerText = time.toLocaleTimeString([], {
-					hour: '2-digit',
-					minute: '2-digit',
-					second: '2-digit',
-				});
+				const div = document.createElement('hr');
+				div.classList.add(
+					'absolute',
+					'w-full',
+					'text-white',
+					'h-px',
+					'border-0',
+				);
+				div.setAttribute('id', text);
+				// const div = document.createElement('div');
+				// div.classList.add(
+				// 	'flex',
+				// 	'flex-row',
+				// 	'justify-between',
+				// 	'absolute',
+				// 	'w-full',
+				// 	'text-sm',
+				// 	'sm:text-base',
+				// 	'px-4',
+				// 	'sm:px-8',
+				// );
+
+				// const textP = document.createElement('p');
+				// textP.innerText = text;
+				// const timeP = document.createElement('p');
+				// timeP.innerText = '>';
+				// timeP.setAttribute(
+				// 	'title',
+				// 	time.toLocaleTimeString([], {
+				// 		hour: '2-digit',
+				// 		minute: '2-digit',
+				// 		second: '2-digit',
+				// 	}),
+				// );
+				// timeP.innerText = time.toLocaleTimeString([], {
+				// 	hour: '2-digit',
+				// 	minute: '2-digit',
+				// 	second: '2-digit',
+				// });
+				// div.appendChild(textP);
+				// div.appendChild(timeP);
 
 				// calculate time since midnight for now
-				// TODO: switch order to center current time
+				// TODO: switch order to center current time?
 				const sinceMidnight = getMsSinceMidnight(time);
 				const dayMs = 24 * 60 * 60 * 1000 * 1.03; // +3% so times at bottom edge are on screen
 				const percentOfDay = sinceMidnight / dayMs;
+				div.style.top = `${percentOfDay * innerHeight}px;`;
+				// div.style['mix-blend-mode'] = 'difference';
+				// div.setAttribute('style', `'mix-blend-mode': difference`);
 
-				console.log({ sinceMidnight, dayMs, percentOfDay });
+				if (text === 'Solar Noon') {
+					div.classList.add(
+						'bg-gradient-to-r',
+						'from-current',
+						'via-transparent',
+						'to-current',
+					);
+				} else {
+					div.classList.add('bg-white');
+					div.style['mix-blend-mode'] = 'difference';
+					// div.setAttribute('style', `'mix-blend-mode': difference`);
+				}
 
-				div.setAttribute(
-					'style',
-					`top: ${((percentOfDay * innerHeight) / innerWidth) * 100}%`,
-				);
-
-				div.appendChild(textP);
-				div.appendChild(timeP);
 				times.appendChild(div);
 			});
 		} catch (error) {
@@ -117,6 +160,20 @@
 		};
 	});
 
+	$: innerHeight &&
+		timeTuples.forEach(({ text, time }) => {
+			const div = document.getElementById(text);
+
+			// calculate time since midnight for now
+			// TODO: switch order to center current time
+			const sinceMidnight = getMsSinceMidnight(time);
+			const dayMs = 24 * 60 * 60 * 1000 * 1.03; // +3% so times at bottom edge are on screen
+			const percentOfDay = sinceMidnight / dayMs;
+			// console.log({ text, percentOfDay, innerHeight });
+
+			div.setAttribute('style', `top: ${percentOfDay * innerHeight}px`);
+		});
+
 	function getMsSinceMidnight(d: Date) {
 		const midnight = new Date(d);
 		midnight.setHours(0, 0, 0, 0);
@@ -131,37 +188,34 @@
 <svelte:window bind:innerHeight bind:innerWidth />
 
 <div class="relative h-full">
-	<div id="bg" class="absolute inset-0 h-full" />
+	<div id="bg" class="fixed inset-0 h-full" />
 
 	<main class="absolute inset-0 h-full text-gray-50">
-		<div class="grid min-h-full text-center place-content-center">
-			<p class="text-center text-7xl font-extralight tabular-nums">
-				{date
-					.toLocaleTimeString([], {
-						hour: '2-digit',
-						minute: '2-digit',
-						second: '2-digit',
-					})
-					.slice(0, -3)}
+		<div id="clock" class="grid min-h-full text-center place-content-center">
+			<p
+				class="text-5xl text-center sm:text-6xl md:text-7xl font-extralight tabular-nums"
+			>
+				{format(date, 'hh:mm:ss')}
 			</p>
-			<p class="text-xl">
-				{date.toLocaleDateString([], {
-					weekday: 'long',
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric',
-				})}
+			<p class="text-sm md:text-xl">
+				{format(date, 'PPP')}
+				{format(date, 'B')}
 			</p>
-			<p class="text-lg font-thin">
-				{city ? city : ''}
+			<p class="font-thin md:text-lg {city ? '' : 'invisible'}">
+				<!-- visibility: hidden to keep line height, no jank/content shift -->
+				{city ? city : 'Where are you?'}
 			</p>
 		</div>
 
-		<div class="absolute inset-0 px-4 text-red-500" id="times" />
+		<div class="text-yellow-400" id="times" bind:this={times} />
 	</main>
 </div>
 
 <style>
+	#times,
+	#clock {
+		mix-blend-mode: difference;
+	}
 	#bg {
 		background-image: linear-gradient(
 			to bottom,
