@@ -100,6 +100,8 @@ export const timeboxes = ({
 			.filter(([, span]) => areIntervalsOverlapping(outputRange, span))
 			.map(([name, span]) => ({ name, ...span })),
 	].sort(({ end: aEnd }, { end: bEnd }) => compareAsc(aEnd, bEnd));
+	output[0].start = outputRange.start;
+	output[output.length - 1].end = outputRange.end;
 
 	return output;
 };

@@ -1,5 +1,8 @@
 <script>
+	import Box from '$lib/Box.svelte';
+	import type { TimeBox } from '$lib/timeboxes';
 	import { timeboxes } from '$lib/timeboxes';
+	import { toSentenceCase } from '$lib/utils';
 	import { format } from 'date-fns';
 	import { onMount } from 'svelte';
 
@@ -11,6 +14,7 @@
 	let city: string;
 	let timeBoxes: HTMLElement;
 	let innerHeight: number;
+	let boxes: TimeBox[] = [];
 
 	onMount(async () => {
 		try {
@@ -30,15 +34,11 @@
 			city = 'Seattle';
 
 			date = new Date();
-			const boxes = timeboxes({ date, lat, long });
+			boxes = timeboxes({ date, lat, long });
 			console.log({ boxes });
 		} catch (error) {
 			console.error(error);
 		}
-
-		// astrodawn = document
-		// 	.getElementById('astrodawn')
-		// 	.setAttribute('style', `top: ${}%`);
 
 		const interval = setInterval(() => {
 			date = new Date();
@@ -48,6 +48,10 @@
 			clearInterval(interval);
 		};
 	});
+
+	function percentOfDay(start: Date, end: Date): number {
+		return (100 * (end.getTime() - start.getTime())) / (1000 * 60 * 60 * 24);
+	}
 </script>
 
 <svelte:head>
@@ -78,9 +82,25 @@
 		</div>
 
 		<div
-			class="text-yellow-400 mix-blend-difference"
+			class="text-yellow-400 mix-blend-difference absolute inset-0 flex flex-col"
 			id="times"
 			bind:this={timeBoxes}
-		/>
+		>
+			{#each boxes as box}
+				<div
+					class="border border-white"
+					style="height:{percentOfDay(box.start, box.end)}%;"
+				>
+					<Box text={toSentenceCase(box.name)} />
+				</div>
+			{/each}
+		</div>
 	</main>
 </div>
+
+<style>
+	#times > div:first-child,
+	#times > div:last-child {
+		@apply flex-shrink;
+	}
+</style>
