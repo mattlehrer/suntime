@@ -191,31 +191,34 @@
 	<div id="bg" class="fixed inset-0 h-full" />
 
 	<main class="absolute inset-0 h-full text-gray-50">
-		<div id="clock" class="grid min-h-full text-center place-content-center">
+		<div
+			id="clock"
+			class="min-h-full text-center grid place-content-center mix-blend-difference"
+		>
 			<p
 				class="text-5xl text-center sm:text-6xl md:text-7xl font-extralight tabular-nums"
 			>
 				{format(date, 'hh:mm:ss')}
 			</p>
-			<p class="text-sm md:text-xl">
+			<p class="mt-2 text-sm md:text-xl">
 				{format(date, 'PPP')}
 				{format(date, 'B')}
 			</p>
-			<p class="font-thin md:text-lg {city ? '' : 'invisible'}">
+			<p class="font-thin mt-2 md:text-lg {city ? '' : 'invisible'}">
 				<!-- visibility: hidden to keep line height, no jank/content shift -->
 				{city ? city : 'Where are you?'}
 			</p>
 		</div>
 
-		<div class="text-yellow-400" id="times" bind:this={times} />
+		<div
+			class="text-yellow-400 mix-blend-difference"
+			id="times"
+			bind:this={times}
+		/>
 	</main>
 </div>
 
 <style>
-	#times,
-	#clock {
-		mix-blend-mode: difference;
-	}
 	#bg {
 		background-image: linear-gradient(
 			to bottom,
