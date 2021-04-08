@@ -1,5 +1,6 @@
 <script>
 	import Box from '$lib/Box.svelte';
+	import { gradients } from '$lib/gradients';
 	import type { TimeBox } from '$lib/timeboxes';
 	import { timeboxes } from '$lib/timeboxes';
 	import { toSentenceCase } from '$lib/utils';
@@ -42,6 +43,7 @@
 
 		const interval = setInterval(() => {
 			date = new Date();
+			boxes = timeboxes({ date, lat, long });
 		}, 1000);
 
 		return () => {
@@ -87,20 +89,10 @@
 			bind:this={timeBoxes}
 		>
 			{#each boxes as box}
-				<div
-					class="border border-white"
-					style="height:{percentOfDay(box.start, box.end)}%;"
-				>
-					<Box text={toSentenceCase(box.name)} />
+				<div style="height:{percentOfDay(box.start, box.end)}%;">
+					<Box text={toSentenceCase(box.name)} gradient={gradients[box.name]} />
 				</div>
 			{/each}
 		</div>
 	</main>
 </div>
-
-<style>
-	#times > div:first-child,
-	#times > div:last-child {
-		@apply flex-shrink;
-	}
-</style>
