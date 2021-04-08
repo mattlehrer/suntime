@@ -18,7 +18,7 @@
 		"svelte-preprocess": "^4.7.0",
 		"tailwindcss": "^2.1.1",
 		"tslib": "^2.2.0",
-		"typescript": "^4.2.3",
+		"typescript": "^4.2.4",
 		"vite": "^2.1.5"
 	},
 	"type": "module",
@@ -27,7 +27,7 @@
 	},
 	"dependencies": {
 		"@modern-dev/daylight": "^0.1.0",
-		"date-fns": "^2.19.0",
+		"date-fns": "^2.20.0",
 		"wretch": "^1.7.4"
 	}
 }
