@@ -90,7 +90,12 @@
 		>
 			{#each boxes as box}
 				<div style="height:{percentOfDay(box.start, box.end)}%;">
-					<Box text={toSentenceCase(box.name)} gradient={gradients[box.name]} />
+					<Box
+						text={toSentenceCase(box.name)}
+						gradient={gradients[box.name]}
+						start={box.start}
+						end={box.end}
+					/>
 				</div>
 			{/each}
 		</div>
