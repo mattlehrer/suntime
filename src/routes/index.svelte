@@ -71,7 +71,7 @@
 			<p
 				class="text-5xl text-center sm:text-6xl md:text-7xl font-extralight tabular-nums"
 			>
-				{format(date, 'hh:mm:ss')}
+				{format(date, 'h:mm:ss aaa')}
 			</p>
 			<p class="mt-2 text-sm md:text-xl">
 				{format(date, 'PPP')}
