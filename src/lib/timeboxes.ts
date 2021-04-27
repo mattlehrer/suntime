@@ -50,8 +50,7 @@ export const timeboxes = ({
 	// add morning and afternoon periods
 	todaysTimes = {
 		...todaysTimes,
-		morning: { start: todaysTimes.sunrise.end, end: transit },
-		afternoon: { start: transit, end: todaysTimes.sunset.start },
+		day: { start: todaysTimes.sunrise.end, end: todaysTimes.sunset.start },
 	};
 
 	({ transit, dawn, dusk, ...yesterdaysTimes } = sun.getTimes(
@@ -61,8 +60,10 @@ export const timeboxes = ({
 	));
 	yesterdaysTimes = {
 		...yesterdaysTimes,
-		morning: { start: yesterdaysTimes.sunrise.end, end: transit },
-		afternoon: { start: transit, end: yesterdaysTimes.sunset.start },
+		day: {
+			start: yesterdaysTimes.sunrise.end,
+			end: yesterdaysTimes.sunset.start,
+		},
 	};
 
 	({ transit, dawn, dusk, ...tomorrowsTimes } = sun.getTimes(
@@ -72,8 +73,10 @@ export const timeboxes = ({
 	));
 	tomorrowsTimes = {
 		...tomorrowsTimes,
-		morning: { start: tomorrowsTimes.sunrise.end, end: transit },
-		afternoon: { start: transit, end: tomorrowsTimes.sunset.start },
+		day: {
+			start: tomorrowsTimes.sunrise.end,
+			end: tomorrowsTimes.sunset.start,
+		},
 	};
 
 	// add night to today, needs to reference other days
